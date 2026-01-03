@@ -2,6 +2,50 @@
 
 ### Environment set up
 
+-  **Create a new venv in the project folder** Run the following command to create an environment
+```bash
+python3 -m venv venv
+```
+
+Activate the environment for the project
+```bash
+source venv/bin/activate
+```
+
+- **Install the dependencies for the project** The requirement files is a file generated that containers all the requires packages/dependencies for the project.
+
+```bash
+pip install -r requirements.txt
+```
+
+Common issues - could not be resolved
+Package could not be resolved - This kind of error is associated with the python interpreter the system is using for the execution.
+Ensure that the python interpreter selected is the one in the same project directory where the environment was created
+
+- **Force your editor to use the venv interpreter**
+Open Command Palette
+
+Ctrl + Shift + P
+
+Select:
+
+Python: Select Interpreter
+
+
+Choose:
+```bash
+./venv/bin/python
+```
+
+Reload VS Code:
+```bash
+Ctrl + Shift + P → Reload Window
+```
+
+Verify in VS Code terminal:
+```bash
+python -c "import sqlalchemy; print(sqlalchemy.__version__)"
+```
 
 [FastAPI](https://fastapi.tiangolo.com/learn/) documentation
 
@@ -21,4 +65,3 @@ This contains really database manipulation with more clear up data
 
 #### Links to the documentation [clickme](https://www.psycopg.org/docs/)
 For [Psycopg3](https://www.psycopg.org/psycopg3/docs/basic/usage.html) installation
-
