@@ -1,5 +1,9 @@
 ## POST API 
 
+Source Code of FastAPI Examples
+FastAPI examples often act as living documentation.
+🔗 https://github.com/tiangolo/fastapi/tree/master/docs_src/security
+
 ### Environment set up
 
 -  **Create a new venv in the project folder** Run the following command to create an environment
@@ -47,7 +51,7 @@ Verify in VS Code terminal:
 python -c "import sqlalchemy; print(sqlalchemy.__version__)"
 ```
 
-[FastAPI](https://fastapi.tiangolo.com/learn/) documentation
+[FastAPI](https://fastapi.tiangolo.com/learn/) documentation [JWT](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/?h=passli#hash-and-verify-the-passwords)
 
 [SQLALCHEMY](https://www.sqlalchemy.org/) documentation
 
@@ -65,3 +69,57 @@ This contains really database manipulation with more clear up data
 
 #### Links to the documentation [clickme](https://www.psycopg.org/docs/)
 For [Psycopg3](https://www.psycopg.org/psycopg3/docs/basic/usage.html) installation
+
+### Authentication 
+What is Authentication?
+
+
+
+
+
+
+#### JWT Base Authentication
+In this project, we are going to implement `jwt` based authentication
+
+The package we will be using for this is `python-jose` Python-jose is commonly used with FastAPI for JWT handling, even though it’s not explicitly listed everywhere in the official FastAPI docs
+
+- FastAPI Is Library-agnostic
+  - FastAPI deliberately avoids tying authentication to a specific JWT library.
+  - JWT is not part of FastAPI
+  - JWT handling is an implementation detail
+  - Multiple valid libraries exist (python-jose, PyJWT, Authlib)
+
+- Avoiding Vendor Lock-in If FastAPI officially endorsed one JWT library:
+  - It would limit flexibility
+  - It would increase maintenance burden
+  - It would break apps if that library changed
+  - Instead, FastAPI documents:
+    - OAuth2 flows
+    - Dependency injection
+    - Security schemes
+    …and leaves token creation/verification to you.
+
+- Where to Find Proper Documentation ✅
+  1. Official python-jose Documentation
+   This is the primary source.
+    🔗 GitHub README - https://github.com/mpdavis/python-jose
+    Key sections to read:
+    - JWT encoding/decoding
+    - Supported algorithms (HS256, RS256)
+    - Error handling (JWTError, ExpiredSignatureError)
+
+
+If you want to generate a password
+
+```bash
+openssl rand -hex 32
+```
+
+
+(class) OAuth2PasswordRequestForm
+This is a dependency class to collect the username and password as form data for an OAuth2 password flow.
+The OAuth2 specification dictates that for a password flow the data should be collected using form data (instead of JSON) and that it should have the specific fields username and password.
+All the initialization parameters are extracted from the request. [Read more](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/#scope) 
+
+If you using this method, You no longer send credential through the body, but through the form data. My question is with schema we have the flexibility of ensuring the email is a validate email using `Emailstr` here how is this achieved.
+
