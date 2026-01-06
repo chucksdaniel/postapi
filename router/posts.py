@@ -19,6 +19,25 @@ def get_posts(db: Session = Depends(get_db)):
     print(db.query(models.Post))
     return posts
 
+""" Function that Gets current user's posts only """
+@router.get("/my/posts", response_model=List[schema.Post])
+def get_my_posts(
+    db: Session = Depends(get_db), 
+    current_user: int = Depends(get_current_user)
+    ):
+    """
+    Docstring for get_my_posts
+    
+    :param db: Description
+    :type db: Session
+    :param current_user: Description
+    :type current_user: int
+    """
+    posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
+    # This prints the query object the real query is executed when we call .all()
+    print(db.query(models.Post))
+    return posts
+
 # This can be used to get the latest post but also can be achieved using sorting
 @router.get("/latest", response_model=schema.Post)
 def get_latest_post(db: Session = Depends(get_db)):
@@ -29,7 +48,8 @@ def get_latest_post(db: Session = Depends(get_db)):
 @router.get("/{post_id}", response_model=schema.Post)
 def read_post(
     post_id: int, response: Response, 
-    q: str | None = None, db: Session = Depends(get_db)
+    q: str | None = None, db: Session = Depends(get_db),
+    current_user: int = Depends(get_current_user)
 ):
     print(f"Post ID: {post_id} and type of data {type(post_id)}")
     post = db.query(models.Post).filter(models.Post.id == post_id).first()
@@ -66,7 +86,7 @@ def create_posts(
 
     # Unpacking the dictionary ease to use when there are many fields
     print(f"Current User: {current_user}")
-    post = models.Post(**new_post.dict())  # Unpacking the dictionary
+    post = models.Post(owner_id=current_user.id, **new_post.dict())  # Unpacking the dictionary
     db.add(post)
     db.commit()
     db.refresh(post)
@@ -87,6 +107,11 @@ def update_post(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail=f"Post with id: {post_id} does not exist"
         )
+    if post.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action"
+        )
     """
     What is being done here is that we are updating 
     the post with the data from updated_post
@@ -95,7 +120,7 @@ def update_post(
     """
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
-    return {"data": updated_post}
+    return post_query.first()
 
 # Delete a post
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -111,6 +136,11 @@ def delete_post(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail=f"Post with id: {post_id} does not exist"
+        )
+    if post.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action"
         )
     post_query.delete(synchronize_session=False)
     db.commit()

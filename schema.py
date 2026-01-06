@@ -2,25 +2,6 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Optional
 
-
-class PostBase(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-    # rating: Optional[int] = None 
-
-class PostCreate(PostBase):
-    pass
-
-
-class Post(PostBase):
-    id: int
-    created_at: datetime
-
-    # class Config:
-    #     orm_mode = True # Enable ORM mode to work with SQLAlchemy models with Pydantic v1
-    model_config = ConfigDict(from_attributes=True) # Enable ORM mode to work with SQLAlchemy models with Pydantic v2
-
 class UserBase(BaseModel):
     email: EmailStr
     password: str
@@ -38,6 +19,26 @@ class UserOut(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class PostBase(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+    # rating: Optional[int] = None 
+
+class PostCreate(PostBase):
+    pass
+
+
+class Post(PostBase):
+    id: int
+    created_at: datetime
+    owner_id: int
+    owner: UserOut
+
+    # class Config:
+    #     orm_mode = True # Enable ORM mode to work with SQLAlchemy models with Pydantic v1
+    model_config = ConfigDict(from_attributes=True) # Enable ORM mode to work with SQLAlchemy models with Pydantic v2
 
 class Token(BaseModel):
     access_token: str

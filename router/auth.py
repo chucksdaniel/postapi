@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 """ Create a new user route """
-@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=schema.UserOut)
+@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=schema.UserOut)
 def create_user(new_user: schema.UserCreate, db: Session = Depends(get_db)):
     print(f"pydantic: {new_user}")
 
