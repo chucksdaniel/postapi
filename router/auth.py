@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 """ Create a new user route """
-@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=schema.UserOut)
+@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=schema.UserOut)
 def create_user(new_user: schema.UserCreate, db: Session = Depends(get_db)):
     print(f"pydantic: {new_user}")
 
@@ -27,7 +27,7 @@ def create_user(new_user: schema.UserCreate, db: Session = Depends(get_db)):
     return user
 
 # Initial login route using UserLogin schema
-# @router.post("/login")
+# @router.post("/login", response_model=schema.Token)
 # def login(user_credentials: schema.UserLogin, db: Session = Depends(get_db)):
 #     print(f"User login attempt: {user_credentials.email}")
 #     # Check if user exists
@@ -52,8 +52,13 @@ def create_user(new_user: schema.UserCreate, db: Session = Depends(get_db)):
 
 #     return {"access_token": access_token, "token_type": "bearer"}
 
-# Revised login route using OAuth2PasswordRequestForm Dependency
-@router.post("/login")
+""" 
+Function: 
+The OAuth2PasswordRequestForm dependency is used to handle form data for user login.
+Revised login route using OAuth2PasswordRequestForm 
+Dependency Data is passed as form data not through JSON body
+"""
+@router.post("/login", response_model=schema.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     print(f"User login attempt: {user_credentials.username}")
     # Check if user exists

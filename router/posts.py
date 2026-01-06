@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from .. import models, schema
+from ..oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/posts",
@@ -52,7 +53,10 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
 
 # Using Pydantic schema to validate request body
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.Post)
-def create_posts(new_post: schema.PostCreate, db: Session = Depends(get_db)):
+def create_posts(
+    new_post: schema.PostCreate, db: Session = Depends(get_db), 
+    current_user: int = Depends(get_current_user)
+  ):
     print(f"pydantic: {new_post}")
     # post = models.Post(
     #     title=new_post.title,
@@ -61,6 +65,7 @@ def create_posts(new_post: schema.PostCreate, db: Session = Depends(get_db)):
     # ) # Not efficient when there are many fields
 
     # Unpacking the dictionary ease to use when there are many fields
+    print(f"Current User: {current_user}")
     post = models.Post(**new_post.dict())  # Unpacking the dictionary
     db.add(post)
     db.commit()
@@ -69,7 +74,10 @@ def create_posts(new_post: schema.PostCreate, db: Session = Depends(get_db)):
 
 # Update a post
 @router.put("/{post_id}", response_model=schema.Post)
-def update_post(post_id: int, updated_post: schema.PostCreate, db: Session = Depends(get_db)):
+def update_post(
+    post_id: int, updated_post: schema.PostCreate, 
+    db: Session = Depends(get_db), current_user: int = Depends(get_current_user)
+):
     print(f"type(post_id) in the update func : {type(post_id)}")
     post_query = db.query(models.Post).filter(models.Post.id == post_id)
     print(post_query)
@@ -91,7 +99,10 @@ def update_post(post_id: int, updated_post: schema.PostCreate, db: Session = Dep
 
 # Delete a post
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(post_id: int, db: Session = Depends(get_db)):
+def delete_post(
+    post_id: int, db: Session = Depends(get_db), 
+    current_user: int = Depends(get_current_user)
+    ):
     print(type(post_id))
     post_query = db.query(models.Post).filter(models.Post.id == post_id)
     print(post_query)
