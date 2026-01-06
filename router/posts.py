@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import Body, status, Response, HTTPException, FastAPI, Depends, APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -13,8 +13,13 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[schema.Post])
-def get_posts(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).all()
+def get_posts(
+    db: Session = Depends(get_db), 
+    limit: int = 10, skip: int = 0, search: Optional[str] = ""
+    ):
+    posts = db.query(models.Post).filter(
+        models.Post.title.contains(search)
+        ).limit(limit).offset(skip).all()
     # This prints the query object the real query is executed when we call .all()
     print(db.query(models.Post))
     return posts
