@@ -1,14 +1,9 @@
-from typing import List
-from fastapi import Body, status, Response, HTTPException, FastAPI, Depends
-from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
+from fastapi import  FastAPI
 
-from . import models, schema
-from .database import engine, get_db
-from .utility import hash_password
+from . import models
+from .database import engine
 from .router import posts, users, auth
-
-# from psycopg2.extras import RealDictCursor
+from .config import settings
 
 models.Base.metadata.create_all(bind=engine)
 

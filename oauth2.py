@@ -5,14 +5,14 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
 from . import models, database
-
 from .schema import TokenData
+from .config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-SECRET_KEY = "1c5e4bb288aadf456ff72d53cef19982fbc1b4e67ad1d903d15dcc603ae160f0"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 def create_access_token(data: dict):
     # Copy the data to encode so that we don't modify the original

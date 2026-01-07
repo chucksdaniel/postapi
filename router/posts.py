@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import Body, status, Response, HTTPException, FastAPI, Depends, APIRouter
+from fastapi import status, Response, HTTPException, Depends, APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
