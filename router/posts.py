@@ -153,3 +153,8 @@ def delete_post(
     status_code=200,
     content={"message": f"Post with id {post_id} has been deleted"}
     )
+
+
+    # select * from posts LEFT JOIN votes ON posts.id = votes.post_id;
+    # select posts.id, COUNT(*) from posts LEFT JOIN votes ON posts.id = votes.post_id group by posts.id; 
+    # select posts.id, COUNT(votes.post_id) as vote from posts LEFT JOIN votes ON posts.id = votes.post_id group by posts.id;

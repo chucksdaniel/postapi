@@ -1,6 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, conint
+from typing import Annotated, Optional
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -46,3 +46,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[int] = None # Optional field to handle cases where token might not have id why did he use str before?
+
+class Vote(BaseModel):
+    post_id: int
+    dir: Annotated[int, Field(ge=0, le=1)]  # 1 = upvote, 0 = remove
+    # dir : conint(le=1)  # 1 for upvote, 0 for remove vote
