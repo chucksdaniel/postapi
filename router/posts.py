@@ -2,6 +2,7 @@ from typing import List, Optional
 from fastapi import status, Response, HTTPException, Depends, APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from ..database import get_db
 from .. import models, schema
@@ -12,7 +13,8 @@ router = APIRouter(
     tags=["Posts"]
 )
 
-@router.get("/", response_model=List[schema.Post])
+@router.get("/")
+# @router.get("/", response_model=List[schema.Post])
 def get_posts(
     db: Session = Depends(get_db), 
     limit: int = 10, skip: int = 0, search: Optional[str] = ""
@@ -22,7 +24,13 @@ def get_posts(
         ).limit(limit).offset(skip).all()
     # This prints the query object the real query is executed when we call .all()
     print(db.query(models.Post))
-    return posts
+
+    result = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+        models.Vote, models.Post.id == models.Vote.post_id, isouter=True
+        ).group_by(models.Post.id).all()
+    print(result)
+    return result
+    # return posts
 
 """ Function that Gets current user's posts only """
 @router.get("/my/posts", response_model=List[schema.Post])
@@ -155,6 +163,14 @@ def delete_post(
     )
 
 
-    # select * from posts LEFT JOIN votes ON posts.id = votes.post_id;
-    # select posts.id, COUNT(*) from posts LEFT JOIN votes ON posts.id = votes.post_id group by posts.id; 
-    # select posts.id, COUNT(votes.post_id) as vote from posts LEFT JOIN votes ON posts.id = votes.post_id group by posts.id;
+
+# select * from posts left join votes on posts.id = votes.post_id;
+# select * from posts LEFT JOIN votes ON posts.id = votes.post_id;
+# select posts.id, COUNT(*) from posts LEFT JOIN votes ON posts.id = votes.post_id group by posts.id; 
+# select posts.id, COUNT(votes.post_id) as vote from posts LEFT JOIN votes ON posts.id = votes.post_id group by posts.id;
+# select posts.id, posts.owner_id, count(*) from posts left join votes on posts.id = votes.post_id group by posts.id;
+# The above will count the null value as 1 so we have the provide a specific column to count and not select *
+# select posts.id, posts.owner_id, count(votes.post_id) from posts left join votes on posts.id = votes.post_id group by posts.id;
+# select posts.*, posts.owner_id, count(votes.post_id) as votes from posts left join votes on posts.id = votes.post_id group by posts.id;
+# To query individual post 
+# select posts.*, posts.owner_id, count(votes.post_id) as votes from posts left join votes on posts.id = votes.post_id where posts.id = 11 group by posts.id;
