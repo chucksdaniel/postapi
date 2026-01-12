@@ -40,6 +40,12 @@ class Post(PostBase):
     #     orm_mode = True # Enable ORM mode to work with SQLAlchemy models with Pydantic v1
     model_config = ConfigDict(from_attributes=True) # Enable ORM mode to work with SQLAlchemy models with Pydantic v2
 
+class PostOut(BaseModel):
+    Post: Post
+    votes: int
+
+    model_config = ConfigDict(from_attributes=True)
+    
 class Token(BaseModel):
     access_token: str
     token_type: str

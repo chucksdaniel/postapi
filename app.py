@@ -5,6 +5,7 @@ from .database import engine
 from .router import posts, users, auth, vote
 from .config import settings
 
+# Create the database tables but only if they don't exist already but this is not recommended for production
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

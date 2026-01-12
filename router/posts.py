@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["Posts"]
 )
 
-@router.get("/")
+@router.get("/", response_model=List[schema.PostOut])
 # @router.get("/", response_model=List[schema.Post])
 def get_posts(
     db: Session = Depends(get_db), 
@@ -27,7 +27,9 @@ def get_posts(
 
     result = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
         models.Vote, models.Post.id == models.Vote.post_id, isouter=True
-        ).group_by(models.Post.id).all()
+        ).group_by(models.Post.id).filter(
+        models.Post.title.contains(search)
+        ).limit(limit).offset(skip).all()
     print(result)
     return result
     # return posts

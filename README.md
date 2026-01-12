@@ -123,3 +123,10 @@ All the initialization parameters are extracted from the request. [Read more](ht
 
 If you using this method, You no longer send credential through the body, but through the form data. My question is with schema we have the flexibility of ensuring the email is a validate email using `Emailstr` here how is this achieved.
 
+
+### Database Migration Tool
+
+The ORM has a limitation, one of the limitation is that once a table has been created doesn't allow for the table upgrade or deleting. so you will have to manually update or drop the table
+
+The solution is [documentation](https://alembic.sqlalchemy.org/en/latest/)
+
